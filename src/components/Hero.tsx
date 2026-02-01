@@ -1,13 +1,38 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, Linkedin } from "lucide-react";
+import LetterGlitch from "./LetterGlitch";
+import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
 
 
 export function Hero() {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const darkColors = ["#1a1a1a","#363636","#242424"]; 
+  const lightColors = ["#f5f5f5","#e2e2e3","#f2f2f2"];
+
   return (
-    <section className="min-h-screen flex items-center justify-center pt-16">
-      <div className="container-narrow text-center">
-        <motion.div
+    <section className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden bg-background">
+      {mounted && (
+        <LetterGlitch
+          key={resolvedTheme}
+          glitchColors={resolvedTheme === "dark" ? darkColors : lightColors}
+          glitchSpeed={90}
+          centerVignette={resolvedTheme === "dark"? true : false}
+          outerVignette={false}
+          smooth
+          className="absolute inset-0 z-0"
+        />
+      )}
+      
+      <div className="relative z-10 container-narrow text-center">
+        <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -69,20 +94,21 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.6 }}
-        >
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          >
-            <ArrowDown className="h-5 w-5 text-muted-foreground" />
-          </motion.div>
-        </motion.div>
       </div>
+      
+      <motion.div
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 0.6 }}
+      >
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+        >
+          <ArrowDown className="h-5 w-5 text-muted-foreground" />
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
