@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 
 const navItems = [
   { label: "Sobre", href: "#about" },
@@ -13,20 +14,16 @@ const navItems = [
 ];
 
 export function Navbar() {
-  const [isDark, setIsDark] = useState(true);
+  const { setTheme, resolvedTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Default to dark mode
-    if (!document.documentElement.classList.contains("dark")) {
-      document.documentElement.classList.add("dark");
-    }
-    setIsDark(true);
+    setMounted(true);
   }, []);
 
   const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle("dark");
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -43,7 +40,7 @@ export function Navbar() {
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
-          Portfolio
+          Portfólio
         </motion.a>
 
         {/* Desktop Navigation */}
@@ -70,20 +67,22 @@ export function Navbar() {
             size="icon"
             onClick={toggleTheme}
           >
-            <motion.div
-              initial={false}
-              animate={{ rotate: isDark ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </motion.div>
+            {mounted && (
+              <motion.div
+                initial={false}
+                animate={{ rotate: resolvedTheme === "dark" ? 0 : 180 }}
+                transition={{ duration: 0.3 }}
+              >
+                {resolvedTheme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+              </motion.div>
+            )}
           </Button>
         </div>
 
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={toggleTheme}>
-            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {mounted && (resolvedTheme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />)}
           </Button>
           <Button
             variant="ghost"
